@@ -31,6 +31,10 @@ function saveStats(user_list){
                 stats.roomOrder = [];
             }
             stats.roomOrder.push(room);
+        }else{
+            if(stats[room].users.length < user_list.length){
+                return stats;
+            }
         }
         stats[room] = {};
         stats[room].users = user_list;

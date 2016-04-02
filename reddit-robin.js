@@ -32,6 +32,7 @@ function saveStats(user_list){
             }
             stats.roomOrder.push(room);
         }
+        stats[room] = {};
         stats[room].users = user_list;
         localStorage.setItem("robin_stats", JSON.stringify(stats));
     }

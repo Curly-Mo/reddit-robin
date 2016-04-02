@@ -26,14 +26,13 @@ function saveStats(user_list){
         user_list[i].color = colorFromName(user_list[i].name);
     }
     if(room !== ""){
-        stats[room] = {};
-        stats[room].users = user_list;
         if(stats[room] === undefined){
             if(stats.roomOrder === undefined){
                 stats.roomOrder = [];
             }
             stats.roomOrder.push(room);
         }
+        stats[room].users = user_list;
         localStorage.setItem("robin_stats", JSON.stringify(stats));
     }
     return stats;
@@ -56,10 +55,10 @@ function postStats(){
     var no_votes = $(".robin-room-participant.robin--vote-class--novote").length;
     var total = stays + grows + abandons + no_votes;
     var result = 'GG';
-    if(grows / total >= 0.5){
+    if(grows / total > 0.5){
         result = 'Growing';
     }
-    if(stays / total >= 0.5){
+    if(stays / total > 0.5){
         result = 'Staying';
     }
     var message = "Room status!   " +
@@ -182,7 +181,7 @@ function update() {
     var lastChatString = $(".robin-message--timestamp").last().attr("datetime");
     var timeSinceLastChat = new Date() - (new Date(lastChatString));
     var now = new Date();
-    if(timeSinceLastChat !== undefined && (timeSinceLastChat > 60000 && now-timeStarted > 60000)) {
+    if(timeSinceLastChat !== undefined && (timeSinceLastChat > 60*1000*3 && now-timeStarted > 60*1000*3)) {
         window.location.reload(); // reload if we haven't seen any activity in a minute.
     }
     if($(".robin-message--message:contains('that is already your vote')").length === 0) {

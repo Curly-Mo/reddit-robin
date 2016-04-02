@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Colin Fahy
 // @namespace    http://github.com/Curly-Mo
-// @version      1.3
+// @version      1.0
 // @author       Colin Fahy
 // @include      https://www.reddit.com/robin*
 // @grant        unsafeWindow
@@ -23,7 +23,7 @@ function saveStats(user_list){
     }
     //set colors
     for(var i=0;i<user_list.length;i++){
-        user_list[i].color = getColorFromName(user_list[i].name);
+        user_list[i].color = colorFromName(user_list[i].name);
     }
     if(room !== ""){
         stats[room] = {};
@@ -101,7 +101,7 @@ function postUserHistory(username){
 
 
 function colorFromName(username) {
-    var parent = ('.robin-message--from.robin--username:contains("'+username+'")').parent();
+    var parent = $('.robin-message--from.robin--username:contains('+username+')').parent();
     if(parent.hasClass('robin--flair-class--flair-0')){
         return 'red';
     }

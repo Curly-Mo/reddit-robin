@@ -6,8 +6,6 @@
 // @include      https://www.reddit.com/robin*
 // @grant        unsafeWindow
 // ==/UserScript==
-unsafeWindow.on = true;
-
 function getRoomName(){
   return $(".robin-chat--room-name").text();
 }
@@ -23,13 +21,15 @@ function saveStats(user_list){
         stats.timeStarted = timeStarted;
         localStorage.setItem("robin_stats", JSON.stringify(stats));
     }
-    if(stats[room] === undefined){
+    if(room !== ""){
         stats[room] = {};
         stats[room].users = user_list;
-        if(stats.roomOrder === undefined){
-            stats.roomOrder = [];
+        if(stats[room] === undefined){
+            if(stats.roomOrder === undefined){
+                stats.roomOrder = [];
+            }
+            stats.roomOrder.push(room);
         }
-        stats.roomOrder.push(room);
         localStorage.setItem("robin_stats", JSON.stringify(stats));
     }
     return stats;
@@ -46,13 +46,25 @@ function post(message){
 }
 
 function postStats(){
+    var grows = $(".robin-room-participant.robin--vote-class--increase").length;
+    var stays = $(".robin-room-participant.robin--vote-class--continue").length;
+    var abandons = $(".robin-room-participant.robin--vote-class--abandon").length;
+    var no_votes = $(".robin-room-participant.robin--vote-class--novote").length;
+    var total = stays + grows + abandons + no_votes;
+    var result = 'GG';
+    if(grows / total >= 0.5){
+        result = 'Growing';
+    }
+    if(stays / total >= 0.5){
+        result = 'Staying';
+    }
     var message = "Room status!   " +
-      "Grows: "+$(".robin-room-participant.robin--vote-class--increase").length +
-      ", Stays: "+$(".robin-room-participant.robin--vote-class--continue").length +
-      ", Abandons: "+$(".robin-room-participant.robin--vote-class--abandon").length +
-      ", No-vote: "+$(".robin-room-participant.robin--vote-class--novote").length +
-      //", Keypaws: Never forget" +
-      ", Time remaining: " + timeRemaining() + " minutes.";
+      "Grows: "+ grows +
+      " | Stays: "+ stays +
+      " | Abandons: "+ abandons +
+      " | No-votes: "+ no_votes +
+      " | RESULT: " + result +
+      " | Time remaining: " + timeRemaining() + " minutes.";
     post(message);
 }
 

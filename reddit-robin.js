@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Colin Fahy
 // @namespace    http://github.com/Curly-Mo
-// @version      1.0
+// @version      1.3
 // @author       Colin Fahy
 // @include      https://www.reddit.com/robin*
 // @grant        unsafeWindow
@@ -20,6 +20,10 @@ function saveStats(user_list){
     if(stats.timeStarted === undefined){
         stats.timeStarted = timeStarted;
         localStorage.setItem("robin_stats", JSON.stringify(stats));
+    }
+    //set colors
+    for(var i=0;i<user_list.length;i++){
+        user_list[i].color = getColorFromName(user_list[i].name);
     }
     if(room !== ""){
         stats[room] = {};
@@ -94,6 +98,31 @@ function postUserHistory(username){
     var message = username + " has been in the past " + count + " rooms with me.";
     post(message);
 }
+
+
+function colorFromName(username) {
+    var parent = ('.robin-message--from.robin--username:contains("'+username+'")').parent();
+    if(parent.hasClass('robin--flair-class--flair-0')){
+        return 'red';
+    }
+    if(parent.hasClass('robin--flair-class--flair-1')){
+        return 'orange';
+    }
+    if(parent.hasClass('robin--flair-class--flair-2')){
+        return 'yellow';
+    }
+    if(parent.hasClass('robin--flair-class--flair-3')){
+        return 'green';
+    }
+    if(parent.hasClass('robin--flair-class--flair-4')){
+        return 'blue';
+    }
+    if(parent.hasClass('robin--flair-class--flair-5')){
+        return 'purple';
+    }
+    return 'unknown';
+}
+
 
 function addMins(date,mins) {
     var newDateObj = new Date(date.getTime() + mins*60000);

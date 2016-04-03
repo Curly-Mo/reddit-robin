@@ -263,7 +263,7 @@ function update() {
 }
 
 console.log('auto grow is running');
-setInterval(update, 1000);
+setInterval(update, 5000);
 
 
 

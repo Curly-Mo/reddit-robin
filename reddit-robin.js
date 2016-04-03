@@ -181,11 +181,11 @@ $('#user_stats_form').on('submit', function(e){
 });
 
 var timeStarted = new Date();
+var list = {};
 
 function update() {
     $(".timeleft").text(timeRemaining()+" minutes remaining");
 
-    var list = {};
     $.get("/robin/",function(a){
         var start = "{"+a.substring(a.indexOf("\"robin_user_list\": ["));
         var end = start.substring(0,start.indexOf("}]")+2)+"}";
@@ -222,3 +222,112 @@ function update() {
 
 console.log('auto grow is running');
 setInterval(update, 1000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Mute user and spam stuff
+
+    // Individual mute button /u/verox-
+    var mutedList = [];
+    $('body').on('click', ".robin--username", function() {
+        var username = $(this).text();
+        var clickedUser = mutedList.indexOf(username);
+
+        if (clickedUser == -1) {
+            // Mute our user.
+            mutedList.push(username);
+            this.style.textDecoration = "line-through";
+            listMutedUsers();
+        } else {
+            // Unmute our user.
+            this.style.textDecoration = "none";
+            mutedList.splice(clickedUser, 1);
+            listMutedUsers();
+        }
+    });
+
+    $(".addon").append("<span style='font-size:12px;text-align:center;'>Muted Users</label>");
+
+    $(".addon").append("<div id='blockedUserList' class='robin-chat--sidebar-widget robin-chat--user-list-widget'></div>");
+
+    function listMutedUsers() {
+
+        $("#blockedUserList").remove();
+
+        $(".addon").append("<div id='blockedUserList' class='robin-chat--sidebar-widget robin-chat--user-list-widget'></div>");
+
+        $.each(mutedList, function(index, value){
+
+            var mutedHere = "present";
+
+            var userInArray = $.grep(list, function(e) {
+                return e.name === value;
+            });
+
+            if (userInArray[0].present === true) {
+                mutedHere = "present";
+            } else {
+                mutedHere = "away";
+            }
+
+            $("#blockedUserList").append("<div class='robin-room-participant robin--user-class--user robin--presence-class--" + mutedHere + " robin--vote-class--" + userInArray[0].vote.toLowerCase() + "'></div>");
+            $("#blockedUserList>.robin-room-participant").last().append("<span class='robin--icon'></span>");
+            $("#blockedUserList>.robin-room-participant").last().append("<span class='robin--username' style='color:" + colorFromName(value) + "'>" + value + "</span>");
+
+        });
+    }
+
+
+
+    var myObserver = new MutationObserver(mutationHandler);
+    //--- Add a target node to the observer. Can only add one node at a time.
+    // XXX Shou: we should only need to watch childList, more can slow it down.
+    $("#robinChatMessageList").each(function() {
+        myObserver.observe(this, { childList: true });
+    });
+    function mutationHandler(mutationRecords) {
+        mutationRecords.forEach(function(mutation) {
+            var jq = $(mutation.addedNodes);
+            // There are nodes added
+            if (jq.length > 0) {
+                // cool we have a message.
+                var thisUser = $(jq[0].children && jq[0].children[1]).text();
+                var $message = $(jq[0].children && jq[0].children[2]);
+                var messageText = $message.text();
+
+                var remove_message =
+                    (mutedList.indexOf(thisUser) >= 0);
+
+
+                if(nextIsRepeat && jq.hasClass('robin--user-class--system')) {
+                }
+                var nextIsRepeat = jq.hasClass('robin--user-class--system') && messageText.indexOf("try again") >= 0;
+                if(nextIsRepeat) {
+                    $(".text-counter-input").val(jq.next().find(".robin-message--message").text());
+                }
+
+                remove_message = remove_message && !jq.hasClass("robin--user-class--system");
+                if (remove_message) {
+                    $message = null;
+                    $(jq[0]).remove();
+                }
+            }
+        });
+    }

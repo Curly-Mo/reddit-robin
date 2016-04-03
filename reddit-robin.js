@@ -122,7 +122,7 @@ function postUserHistory(username){
     post(message);
     setTimeout(function() {
         postUserVoteHistory(username);
-    }, 2000);
+    }, 4000);
 }
 
 function postUserVoteHistory(username){
@@ -145,7 +145,14 @@ function postUserVoteHistory(username){
     }
     var message = username + " has voted ";
     for(var key in votes){
-        message += key + " " + votes[key] + " times. ";
+        var vote = key;
+        if( key == 'INCREASE'){
+            vote = 'GROW';
+        }
+        if (key=='CONTINUE'){
+            vote = 'STAY';
+        }
+        message += vote + " " + votes[key] + " times. ";
     }
     post(message);
 }

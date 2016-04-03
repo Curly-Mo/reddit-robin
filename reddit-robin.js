@@ -64,7 +64,9 @@ function post(message){
     if(message.length > 140){
         var end = message.substring(0, 140).lastIndexOf(' ');
         $(".text-counter-input").val(message.substring(0,end)).submit();
-        post(message.substring(end));
+        setTimeout(function() {
+            post(message.substring(end));
+        }, 4000);
     }else{
         $(".text-counter-input").val(message).submit();
     }
@@ -118,7 +120,36 @@ function postUserHistory(username){
     }
     var message = username + " has been in the past " + count + " rooms with me.";
     post(message);
+    setTimeout(function() {
+        postUserVoteHistory(username);
+    }, 2000);
 }
+
+function postUserVoteHistory(username){
+    var stats = JSON.parse(localStorage.getItem('robin_stats', JSON.stringify({})));
+    var votes = {};
+    for(var i=0; i<stats.roomOrder.length; i++){
+        var room = stats.roomOrder[i];
+        var users = stats[room].users;
+        for(var k=0; k<users.length; k++){
+            if(users[k].name == username){
+                if(!votes.hasOwnProperty(users[k].vote)){
+                    votes[users[k].vote] = 0;
+                }
+                votes[users[k].vote] += 1;
+            }
+        }
+    }
+    if(Object.keys(votes).length === 0){
+        return;
+    }
+    var message = username + " has voted ";
+    for(var key in votes){
+        message += key + " " + votes[key] + " times. ";
+    }
+    post(message);
+}
+
 
 
 function colorFromName(username) {

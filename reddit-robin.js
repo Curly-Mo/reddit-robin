@@ -28,6 +28,7 @@ function saveStats(user_list){
     if(room !== ""){
         if(stats[room] === undefined){
             stats[room] = {};
+            stats[room].users = user_list;
             if(stats.roomOrder === undefined){
                 stats.roomOrder = [];
             }

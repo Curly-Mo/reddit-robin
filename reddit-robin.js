@@ -27,6 +27,7 @@ function saveStats(user_list){
     }
     if(room !== ""){
         if(stats[room] === undefined){
+            stats[room] = {};
             if(stats.roomOrder === undefined){
                 stats.roomOrder = [];
             }
@@ -36,11 +37,26 @@ function saveStats(user_list){
                 return stats;
             }
         }
-        stats[room] = {};
-        stats[room].users = user_list;
+        stats[room].users = addUsers(stats[room].users, user_list);
         localStorage.setItem("robin_stats", JSON.stringify(stats));
     }
     return stats;
+}
+
+function addUsers(list, user_list) {
+  for(var i=0; i<user_list.length;i++){
+      var found = false;
+      for(var k=0; k<list.length;k++){
+          if(list[k].name == user_list[i].name){
+              list[k] = user_list[i];
+              found = true;
+          }
+      }
+      if(!found){
+          list.push(user_list[i]);
+      }
+  }
+  return list;
 }
 
 function post(message){
